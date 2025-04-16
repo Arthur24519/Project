@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Форма услуги{% endblock %}
+
+{% block content %}
+    <h2>{% if service %}Редактировать услугу{% else %}Добавить услугу{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Наименование:</label>
+        <input type="text" name="name" id="name" value="{{ service.name|default:'' }}" required>
+        
+        <label for="description">Описание:</label>
+        <textarea name="description" id="description" required>{{ service.description|default:'' }}</textarea>
+        
+        <label for="price">Цена:</label>
+        <input type="number" name="price" id="price" value="{{ service.price|default:'' }}" required>
+        
+        <button type="submit">{% if service %}Сохранить{% else %}Добавить{% endif %}</button>
+    </form>
+    <a href="{% url 'service_list' %}">Назад к списку услуг</a>
+{% endblock %}

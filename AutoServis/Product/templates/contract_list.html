@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Список договоров{% endblock %}
+
+{% block content %}
+    <h2>Список договоров</h2>
+    <a href="{% url 'add_contract' %}">Добавить договор</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Клиент</th>
+                <th>Автомобиль</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Сумма</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for contract in contracts %}
+                <tr>
+                    <td>{{ contract.client.full_name }}</td>
+                    <td>{{ contract.car.brand }} {{ contract.car.model }}</td>
+                    <td>{{ contract.date }}</td>
+                    <td>{{ contract.status }}</td>
+                    <td>{{ contract.total_amount }}</td>
+                    <td>
+                        <a href="{% url 'edit_contract' contract.pk %}">Редактировать</a>
+                        <form action="{% url 'delete_contract' contract.pk %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit">Удалить</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

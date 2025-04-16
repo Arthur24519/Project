@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Форма клиента{% endblock %}
+
+{% block content %}
+    <h2>{% if client %}Редактировать клиента{% else %}Добавить клиента{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="full_name">ФИО:</label>
+        <input type="text" name="full_name" id="full_name" value="{{ client.full_name|default:'' }}" required>
+        
+        <label for="phone">Телефон:</label>
+        <input type="text" name="phone" id="phone" value="{{ client.phone|default:'' }}" required>
+        
+        < input type="email" name="email" id="email" value="{{ client.email|default:'' }}" required>
+        
+        <label for="address">Адрес:</label>
+        <textarea name="address" id="address" required>{{ client.address|default:'' }}</textarea>
+        
+        <button type="submit">{% if client %}Сохранить{% else %}Добавить{% endif %}</button>
+    </form>
+    <a href="{% url 'client_list' %}">Назад к списку клиентов</a>
+{% endblock %}

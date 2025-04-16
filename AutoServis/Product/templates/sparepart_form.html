@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Форма запчасти{% endblock %}
+
+{% block content %}
+    <h2>{% if spare_part %}Редактировать запчасть{% else %}Добавить запчасть{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="name">Наименование:</label>
+        <input type="text" name="name" id="name" value="{{ spare_part.name|default:'' }}" required>
+        
+        <label for="price">Цена:</label>
+        <input type="number" name="price" id="price" value="{{ spare_part.price|default:'' }}" required>
+        
+        <label for="quantity">Количество:</label>
+        <input type="number" name="quantity" id="quantity" value="{{ spare_part.quantity|default:'' }}" required>
+        
+        <button type="submit">{% if spare_part %}Сохранить{% else %}Добавить{% endif %}</button>
+    </form>
+    <a href="{% url 'sparepart_list' %}">Назад к списку запчастей</a>
+{% endblock %}

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Автомастерская{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Автомастерская</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'client_list' %}">Клиенты</a></li>
+                <li><a href="{% url 'car_list' %}">Автомобили</a></li>
+                <li><a href="{% url 'contract_list' %}">Договоры</a></li>
+                <li><a href="{% url 'service_list' %}">Услуги</a></li>
+                <li><a href="{% url 'sparepart_list' %}">Запчасти</a></li>
+                <li><a href="{% url 'order_list' %}">Заказы</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2023 Автомастерская</p>
+    </footer>
+</body>
+</html>

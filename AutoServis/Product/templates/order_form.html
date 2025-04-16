@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Форма заказа{% endblock %}
+
+{% block content %}
+    <h2>{% if order %}Редактировать заказ{% else %}Добавить заказ{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="client_id">Клиент:</label>
+        <select name="client_id" id="client_id" required>
+            {% for client in clients %}
+                <option value="{{ client.pk }}" {% if order.client.pk == client.pk %}selected{% endif %}>{{ client.full_name }}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="service_id">Услуга:</label>
+        <select name="service_id" id="service_id" required>
+            {% for service in services %}
+                <option value="{{ service.pk }}" {% if order.service.pk == service.pk %}selected{% endif %}>{{ service.name }}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="order_date">Дата заказа:</label>
+        <input type="date" name="order_date" id="order_date" value="{{ order.order_date|default:'' }}" required>
+        
+        <button type="submit">{% if order %}Сохранить{% else %}Добавить{% endif %}</button>
+    </form>
+    <a href="{% url 'order_list' %}">Назад к списку заказов</a>
+{% endblock %}
