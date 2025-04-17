@@ -1,31 +1,31 @@
 {% extends 'base.html' %}
 
-{% block title %}Форма автомобиля{% endblock %}
+{% block title %}Добавить автомобиль{% endblock %}
 
 {% block content %}
-    <h2>{% if car %}Редактировать автомобиль{% else %}Добавить автомобиль{% endif %}</h2>
+    <h2>Добавить автомобиль</h2>
     <form method="post">
         {% csrf_token %}
         <label for="brand">Марка:</label>
-        <input type="text" name="brand" id="brand" value="{{ car.brand|default:'' }}" required>
+        <input type="text" name="brand" id="brand" required>
         
         <label for="model">Модель:</label>
-        <input type="text" name="model" id="model" value="{{ car.model|default:'' }}" required>
+        <input type="text" name="model" id="model" required>
         
         <label for="year">Год выпуска:</label>
-        <input type="number" name="year" id="year" value="{{ car.year|default:'' }}" required>
+        <input type="number" name="year" id="year" required>
         
         <label for="vin">VIN:</label>
-        <input type="text" name="vin" id="vin" value="{{ car.vin|default:'' }}" required>
+        <input type="text" name="vin" id="vin" required>
         
         <label for="client_id">Владелец:</label>
         <select name="client_id" id="client_id" required>
             {% for client in clients %}
-                <option value="{{ client.pk }}" {% if car.client.pk == client.pk %}selected{% endif %}>{{ client.full_name }}</option>
+                <option value="{{ client.pk }}">{{ client.full_name }}</option>
             {% endfor %}
         </select>
         
-        <button type="submit">{% if car %}Сохранить{% else %}Добавить{% endif %}</button>
+        <button type="submit">Добавить</button>
     </form>
     <a href="{% url 'car_list' %}">Назад к списку автомобилей</a>
 {% endblock %}

@@ -17,6 +17,10 @@ class ClientListView(View):
         return render(request, 'client_list.html', {'clients': clients})
 
 class ClientCreateView(View):
+    def get(self, request):
+        # Здесь вы можете передать пустую форму, если используете Django Forms
+        return render(request, 'client_form.html')  # Убедитесь, что у вас есть соответствующий шаблон
+
     def post(self, request):
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
@@ -55,6 +59,10 @@ class CarListView(View):
         return render(request, 'car_list.html', {'cars': cars})
 
 class CarCreateView(View):
+    def get(self, request):
+        clients = Client.objects.all()
+        return render(request, 'car_form.html', {'clients': clients})
+
     def post(self, request):
         brand = request.POST.get('brand')
         model = request.POST.get('model')
@@ -62,6 +70,9 @@ class CarCreateView(View):
         vin = request.POST.get('vin')
         client_id = request.POST.get('client_id')
         
+        if len(vin) > 17:
+            return HttpResponse("VIN не может превышать 17 символов.", status=400)
+
         if brand and model and year and vin and client_id:
             client = get_object_or_404(Client, pk=client_id)
             Car.objects.create(brand=brand, model=model, year=year, vin=vin, client=client)
@@ -71,7 +82,8 @@ class CarCreateView(View):
 class CarUpdateView(View):
     def get(self, request, pk):
         car = get_object_or_404(Car, pk=pk)
-        return render(request, 'car_form.html', {'car': car})
+        clients = Client.objects.all()  # Получаем всех клиентов
+        return render(request, 'car_form.html', {'car': car, 'clients': clients})  # Передаем клиентов в контекст
 
     def post(self, request, pk):
         car = get_object_or_404(Car, pk=pk)
@@ -99,6 +111,11 @@ class ContractListView(View):
         return render(request, 'contract_list.html', {'contracts': contracts})
 
 class ContractCreateView(View):
+    def get(self, request):
+        clients = Client.objects.all()  # Получаем список клиентов для выбора
+        cars = Car.objects.all()  # Получаем список автомобилей для выбора
+        return render(request, 'contract_form.html', {'clients': clients, 'cars': cars})
+
     def post(self, request):
         client_id = request.POST.get('client_id')
         car_id = request.POST.get('car_id')
@@ -111,12 +128,18 @@ class ContractCreateView(View):
             car = get_object_or_404(Car, pk=car_id)
             Contract.objects.create(client=client, car=car, date=date, status=status, total_amount=total_amount)
             return redirect('contract_list')
-        return HttpResponse("Invalid data", status=400) 
+        return HttpResponse("Invalid data", status=400)
         
 class ContractUpdateView(View):
     def get(self, request, pk):
         contract = get_object_or_404(Contract, pk=pk)
-        return render(request, 'contract_form.html', {'contract': contract})
+        clients = Client.objects.all()  # Получаем всех клиентов
+        cars = Car.objects.all()  # Получаем всех автомобилей
+        return render(request, 'contract_form.html', {
+            'contract': contract,
+            'clients': clients,
+            'cars': cars
+        })
 
     def post(self, request, pk):
         contract = get_object_or_404(Contract, pk=pk)
@@ -145,6 +168,10 @@ class ServiceListView(View):
         return render(request, 'service_list.html', {'services': services})
 
 class ServiceCreateView(View):
+    def get(self, request):
+        # Отправляем пустую форму для добавления услуги
+        return render(request, 'service_form.html')
+
     def post(self, request):
         name = request.POST.get('name')
         description = request.POST.get('description')
@@ -181,6 +208,10 @@ class SparePartListView(View):
         return render(request, 'sparepart_list.html', {'spare_parts': spare_parts})
 
 class SparePartCreateView(View):
+    def get(self, request):
+        # Отправляем пустую форму для добавления запчасти
+        return render(request, 'sparepart_form.html')
+
     def post(self, request):
         name = request.POST.get('name')
         price = request.POST.get('price')
@@ -217,22 +248,33 @@ class OrderListView(View):
         return render(request, 'order_list.html', {'orders': orders})
 
 class OrderCreateView(View):
+    def get(self, request):
+        clients = Client.objects.all()  # Получаем список клиентов
+        cars = Car.objects.all()  # Получаем список автомобилей
+        return render(request, 'order_form.html', {'clients': clients, 'cars': cars})
+
     def post(self, request):
         client_id = request.POST.get('client_id')
-        service_id = request.POST.get('service_id')
+        car_id = request.POST.get('car_id')
         order_date = request.POST.get('order_date')
         
-        if client_id and service_id and order_date:
+        if client_id and car_id and order_date:
             client = get_object_or_404(Client, pk=client_id)
-            service = get_object_or_404(Service, pk=service_id)
-            Order.objects.create(client=client, service=service, order_date=order_date)
+            car = get_object_or_404(Car, pk=car_id)
+            Order.objects.create(client=client, car=car, order_date=order_date)
             return redirect('order_list')
         return HttpResponse("Invalid data", status=400)
 
 class OrderUpdateView(View):
     def get(self, request, pk):
-        order = get_object_or_404 (Order, pk=pk)
-        return render(request, 'order_form.html', {'order': order})
+        order = get_object_or_404(Order, pk=pk)
+        clients = Client.objects.all()  # Получаем всех клиентов
+        services = Service.objects.all()  # Получаем все услуги
+        return render(request, 'order_form.html', {
+            'order': order,
+            'clients': clients,
+            'services': services
+        })
 
     def post(self, request, pk):
         order = get_object_or_404(Order, pk=pk)
