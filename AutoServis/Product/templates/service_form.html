@@ -10,7 +10,7 @@
         <input type="text" name="name" id="name" value="{{ service.name|default:'' }}" required>
         
         <label for="description">Описание:</label>
-        <textarea name="description" id="description" required>{{ service.description|default:'' }}</textarea>
+        <input name="description" id="description" required>{{ service.description|default:'' }}
         
         <label for="price">Цена:</label>
         <input type="number" name="price" id="price" value="{{ service.price|default:'' }}" required>

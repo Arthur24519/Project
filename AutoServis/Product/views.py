@@ -250,8 +250,8 @@ class OrderListView(View):
 class OrderCreateView(View):
     def get(self, request):
         clients = Client.objects.all()  # Получаем список клиентов
-        cars = Car.objects.all()  # Получаем список автомобилей
-        return render(request, 'order_form.html', {'clients': clients, 'cars': cars})
+        services = Service.objects.all()  # Получаем все услуги
+        return render(request, 'order_form.html', {'clients': clients, 'services': services})
 
     def post(self, request):
         client_id = request.POST.get('client_id')
