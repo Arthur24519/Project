@@ -255,13 +255,13 @@ class OrderCreateView(View):
 
     def post(self, request):
         client_id = request.POST.get('client_id')
-        car_id = request.POST.get('car_id')
+        service_id = request.POST.get('service_id')  # Получаем service_id
         order_date = request.POST.get('order_date')
         
-        if client_id and car_id and order_date:
+        if client_id and service_id and order_date:  # Проверяем наличие всех необходимых данных
             client = get_object_or_404(Client, pk=client_id)
-            car = get_object_or_404(Car, pk=car_id)
-            Order.objects.create(client=client, car=car, order_date=order_date)
+            service = get_object_or_404(Service, pk=service_id)  # Получаем объект Service
+            Order.objects.create(client=client, service=service, order_date=order_date)  # Сохраняем service
             return redirect('order_list')
         return HttpResponse("Invalid data", status=400)
 
