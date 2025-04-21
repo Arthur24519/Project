@@ -7,13 +7,13 @@
     <form method="post">
         {% csrf_token %}
         <label for="name">Наименование:</label>
-        <input type="text" name="name" id="name" value="{{ service.name|default:'' }}" required>
+        <input type="text" name="name" placeholder="Введите наименование услуги" value="{{ service.name|default:'' }}" required>
         
         <label for="description">Описание:</label>
-        <input name="description" id="description" required>{{ service.description|default:'' }}
+        <input name="description" placeholder="Введите описание услуги" required>{{ service.description|default:'' }}
         
         <label for="price">Цена:</label>
-        <input type="number" name="price" id="price" value="{{ service.price|default:'' }}" required>
+        <input type="number" name="price" placeholder="Введите стоимость услуги" value="{{ service.price|default:'' }}" required>
         
         <button type="submit">{% if service %}Сохранить{% else %}Добавить{% endif %}</button>
     </form>

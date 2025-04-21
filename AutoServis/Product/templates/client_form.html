@@ -7,16 +7,16 @@
     <form method="post">
         {% csrf_token %}
         <label for="full_name">ФИО:</label>
-        <input type="text" name="full_name" id="full_name" required>
+        <input type="text" name="full_name" placeholder="Введите ваше ФИО" required>
         
         <label for="phone">Телефон:</label>
-        <input type="text" name="phone" id="phone" required>
+        <input type="text" name="phone" placeholder="Введите ваш номер телефона" required>
         
         <label for="email">Email:</label>
-        <input type="email" name="email" id="email" required>
+        <input type="email" name="email" placeholder="Введите ваш email" required>
         
         <label for="address">Адрес:</label>
-        <input name="address" id="address" required>
+        <input name="address" placeholder="Введите ваш адрес" required>
         
         <button type="submit">Добавить</button>
     </form>

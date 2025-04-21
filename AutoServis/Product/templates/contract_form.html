@@ -24,10 +24,10 @@
         <input type="date" name="date" id="date" value="{{ contract.date|default:'' }}" required>
         
         <label for="status">Статус:</label>
-        <input type="text" name="status" id="status" value="{{ contract.status|default:'' }}" required>
+        <input type="text" name="status" placeholder="Укажите текущий статус" value="{{ contract.status|default:'' }}" required>
         
         <label for="total_amount">Сумма:</label>
-        <input type="number" name="total_amount" id="total_amount" value="{{ contract.total_amount|default:'' }}" required>
+        <input type="number" name="total_amount" placeholder="Введите сумму" value="{{ contract.total_amount|default:'' }}" required>
         
         <button type="submit">{% if contract %}Сохранить{% else %}Добавить{% endif %}</button>
     </form>

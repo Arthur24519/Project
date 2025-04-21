@@ -16,21 +16,21 @@
             </tr>
         </thead>
         <tbody>
-            {% for client in clients %}
-                <tr>
-                    <td>{{ client.full_name }}</td>
-                    <td>{{ client.phone }}</td>
-                    <td>{{ client.email }}</td>
-                    <td>{{ client.address }}</td>
-                    <td>
-                        <a href="{% url 'edit_client' client.pk %}">Редактировать</a>
-                        <form action="{% url 'delete_client' client.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit">Удалить</button>
-                        </form>
-                    </td>
-                </tr>
-            {% endfor %}
+            {% for client, email in clients %}
+            <tr>
+                <td>{{ client.full_name }}</td>
+                <td>{{ client.phone }}</td>
+                <td>{{ email }}</td>
+                <td>{{ client.address }}</td>
+                <td>
+                    <a href="{% url 'edit_client' client.pk %}">Редактировать</a>
+                    <form action="{% url 'delete_client' client.pk %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 {% endblock %}

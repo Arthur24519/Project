@@ -7,13 +7,13 @@
     <form method="post">
         {% csrf_token %}
         <label for="name">Наименование:</label>
-        <input type="text" name="name" id="name" value="{{ spare_part.name|default:'' }}" required>
+        <input type="text" name="name" placeholder="Введите наименование запчасти" value="{{ spare_part.name|default:'' }}" required>
         
         <label for="price">Цена:</label>
-        <input type="number" name="price" id="price" value="{{ spare_part.price|default:'' }}" required>
+        <input type="number" name="price" placeholder="Введите стоимость запчасти" value="{{ spare_part.price|default:'' }}" required>
         
         <label for="quantity">Количество:</label>
-        <input type="number" name="quantity" id="quantity" value="{{ spare_part.quantity|default:'' }}" required>
+        <input type="number" name="quantity" placeholder="Введите количество запчастей" value="{{ spare_part.quantity|default:'' }}" required>
         
         <button type="submit">{% if spare_part %}Сохранить{% else %}Добавить{% endif %}</button>
     </form>

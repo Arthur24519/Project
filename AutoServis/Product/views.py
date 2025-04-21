@@ -5,6 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib import messages
+from hashlib import sha256
 
 # Главная страница
 def home(request):
@@ -14,22 +15,33 @@ def home(request):
 class ClientListView(View):
     def get(self, request):
         clients = Client.objects.all()
-        return render(request, 'client_list.html', {'clients': clients})
+        # Используем get_email() для отображения email
+        clients_with_email = [(client, client.get_email()) for client in clients]
+        return render(request, 'client_list.html', {'clients': clients_with_email})
 
 class ClientCreateView(View):
     def get(self, request):
-        # Здесь вы можете передать пустую форму, если используете Django Forms
-        return render(request, 'client_form.html')  # Убедитесь, что у вас есть соответствующий шаблон
-
+        return render(request, 'client_form.html')
+    
     def post(self, request):
         full_name = request.POST.get('full_name')
         phone = request.POST.get('phone')
         email = request.POST.get('email')
         address = request.POST.get('address')
-        
+
         if full_name and phone and email and address:
-            Client.objects.create(full_name=full_name, phone=phone, email=email, address=address)
-            return redirect('client_list')
+            # Хешируем email для проверки существования
+            hashed_email = sha256(email.encode()).hexdigest()
+            if Client.objects.filter(encrypted_email=hashed_email).exists():
+                return HttpResponse("Клиент с таким email уже существует.", status=400)
+
+            try:
+                client = Client(full_name=full_name, phone=phone, address=address)
+                client.set_email(email)  # Зашифровываем email
+                client.save()
+                return redirect('client_list')
+            except Exception as e:
+                return HttpResponse(f"An error occurred: {str(e)}", status=500)
         return HttpResponse("Invalid data", status=400)
 
 class ClientUpdateView(View):
@@ -41,18 +53,24 @@ class ClientUpdateView(View):
         client = get_object_or_404(Client, pk=pk)
         client.full_name = request.POST.get('full_name', client.full_name)
         client.phone = request.POST.get('phone', client.phone)
-        client.email = request.POST.get('email', client.email)
+        email = request.POST.get('email')
+        if email:
+            client.set_email(email)
         client.address = request.POST.get('address', client.address)
         client.save()
         return redirect('client_list')
-
+    
 class ClientDeleteView(View):
     def post(self, request, pk):
         client = get_object_or_404(Client, pk=pk)
-        client.delete()
+        try:
+            client.delete()
+            messages.success(request, 'Клиент успешно удален.')
+        except Exception as e:
+            messages.error(request, f"Ошибка при удалении клиента: {str(e)}")
         return redirect('client_list')
 
-# Представления для автомобилей
+# Представления для автомобилей 
 class CarListView(View):
     def get(self, request):
         cars = Car.objects.all()
@@ -299,14 +317,24 @@ def register(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
+        full_name = request.POST.get('full_name')
+        phone = request.POST.get('phone')
+        address = request.POST.get('address')
 
-        if username and password and email:
-            user = User.objects.create_user(username=username, password=password, email=email)
+        if username and password and email and full_name and phone and address:
+            if User.objects.filter(username=username).exists():
+                messages.error(request, 'Пользователь с таким именем уже существует.')
+                return redirect('register')
+
+            user = User.objects.create_user(username=username, password=password)
+            client = Client(full_name=full_name, phone=phone, address=address)
+            client.set_email(email)
+            client.save()
             user.save()
             login(request, user)
             messages.success(request, 'Вы успешно зарегистрированы!')
             return redirect('home')
         else:
             messages.error(request, 'Пожалуйста, заполните все поля.')
-    
+
     return render(request, 'registration/register.html')
