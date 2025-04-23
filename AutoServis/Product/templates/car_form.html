@@ -7,21 +7,21 @@
     <form method="post">
         {% csrf_token %}
         <label for="brand">Марка:</label>
-        <input type="text" name="brand" placeholder="Введите марку автомобиля" required>
+        <input type="text" name="brand" placeholder="Введите марку автомобиля" value="{{ car.brand }}" required>
         
         <label for="model">Модель:</label>
-        <input type="text" name="model" placeholder="Введите модель автомобиля" required>
+        <input type="text" name="model" placeholder="Введите модель автомобиля" value="{{ car.model }}" required>
         
         <label for="year">Год выпуска:</label>
-        <input type="number" name="year" placeholder="Введите год выпуска автомобиля" required>
+        <input type="number" name="year" placeholder="Введите год выпуска автомобиля" value="{{ car.year }}" required>
         
         <label for="vin">VIN:</label>
-        <input type="text" name="vin" placeholder="Введите VIN-номер автомобиля" required>
+        <input type="text" name="vin" placeholder="Введите VIN-номер автомобиля" value="{{ car.vin }}" required>
         
         <label for="client_id">Владелец:</label>
         <select name="client_id" id="client_id" required>
             {% for client in clients %}
-                <option value="{{ client.pk }}">{{ client.full_name }}</option>
+                <option value="{{ client.pk }}" {% if client.pk == car.client.pk %}selected{% endif %}>{{ client.full_name }}</option>
             {% endfor %}
         </select>
         

@@ -1,22 +1,28 @@
 {% extends 'base.html' %}
 
-{% block title %}Добавить клиента{% endblock %}
+{% block title %}Редактировать клиента{% endblock %}
 
 {% block content %}
     <h2>Добавить клиента</h2>
     <form method="post">
         {% csrf_token %}
+
+        {% if error_message %}
+            <div style="color: red;">{{ error_message }}</div>
+        {% endif %}
+
         <label for="full_name">ФИО:</label>
-        <input type="text" name="full_name" placeholder="Введите ваше ФИО" required>
+        <input type="text" name="full_name" placeholder="Введите ваше ФИО" value="{{ client.full_name }}" required pattern="^[A-Za-zА-Яа-яЁё_ ]+$" title="Для ввода используйте только буквы и знак нижнего подчеркивания. Без пробелов!">
+        <small>Для ввода используйте только буквы и знак нижнего подчеркивания. Без пробелов!</small>
         
         <label for="phone">Телефон:</label>
-        <input type="text" name="phone" placeholder="Введите ваш номер телефона" required>
+        <input type="text" name="phone" placeholder="Введите ваш номер телефона" value="{{ client.phone }}" required>
         
         <label for="email">Email:</label>
-        <input type="email" name="email" placeholder="Введите ваш email" required>
+        <input type="email" name="email" placeholder="Введите ваш email" value="{{ client.get_email }}" required>
         
         <label for="address">Адрес:</label>
-        <input name="address" placeholder="Введите ваш адрес" required>
+        <input name="address" placeholder="Введите ваш адрес" value="{{ client.address }}" required>
         
         <button type="submit">Добавить</button>
     </form>

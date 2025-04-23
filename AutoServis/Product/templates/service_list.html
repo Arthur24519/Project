@@ -4,14 +4,20 @@
 
 {% block content %}
     <h2>Список услуг</h2>
-    <a href="{% url 'add_service' %}">Добавить услугу</a>
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}  <!-- Проверка на права администратора -->
+            <a href="{% url 'add_service' %}">Добавить услугу</a>
+        {% endif %}
+    {% endif %}
     <table>
         <thead>
             <tr>
                 <th>Наименование</th>
                 <th>Описание</th>
                 <th>Цена</th>
-                <th>Действия</th>
+                {% if user.is_staff %}  <!-- Проверка на права администратора -->
+                    <th>Действия</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -20,13 +26,15 @@
                     <td>{{ service.name }}</td>
                     <td>{{ service.description }}</td>
                     <td>{{ service.price }}</td>
-                    <td>
-                        <a href="{% url 'edit_service' service.pk %}">Редактировать</a>
-                        <form action="{% url 'delete_service' service.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit">Удалить</button>
-                        </form>
-                    </td>
+                    {% if user.is_staff %}  <!-- Проверка на права администратора -->
+                        <td>
+                            <a href="{% url 'edit_service' service.pk %}">Редактировать</a>
+                            <form action="{% url 'delete_service' service.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Удалить</button>
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>

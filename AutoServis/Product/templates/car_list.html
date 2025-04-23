@@ -4,7 +4,9 @@
 
 {% block content %}
     <h2>Список автомобилей</h2>
-    <a href="{% url 'add_car' %}">Добавить автомобиль</a>
+    {% if user.is_authenticated %}
+        <a href="{% url 'add_car' %}">Добавить автомобиль</a>
+    {% endif %}
     <table>
         <thead>
             <tr>
@@ -25,11 +27,13 @@
                     <td>{{ car.vin }}</td>
                     <td>{{ car.client.full_name }}</td>
                     <td>
-                        <a href="{% url 'edit_car' car.pk %}">Редактировать</a>
-                        <form action="{% url 'delete_car' car.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit">Удалить</button>
-                        </form>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'edit_car' car.pk %}">Редактировать</a>
+                            <form action="{% url 'delete_car' car.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Удалить</button>
+                            </form>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}

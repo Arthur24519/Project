@@ -5,20 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Автомастерская{% endblock %}</title>
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet"> <!-- Подключение внешнего CSS -->
 </head>
 <body>
     <header>
-        <h1>Автомастерская</h1>
+        <h1><a href="{% url 'home' %}" style="text-decoration: none; color: inherit;">Автомастерская</a></h1>
         <nav>
+            {% if user.is_authenticated %}
             <ul>
+                {% if user.is_staff %}
                 <li><a href="{% url 'client_list' %}">Клиенты</a></li>
                 <li><a href="{% url 'car_list' %}">Автомобили</a></li>
                 <li><a href="{% url 'contract_list' %}">Договоры</a></li>
+                <li><a href="{% url 'order_list' %}">Заказы</a></li>
+                {% endif %}
                 <li><a href="{% url 'service_list' %}">Услуги</a></li>
                 <li><a href="{% url 'sparepart_list' %}">Запчасти</a></li>
-                <li><a href="{% url 'order_list' %}">Заказы</a></li>
+                {% if not user.is_staff %}
+                    <li><a href="{% url 'user_data' %}">Данные</a></li>
+                {% endif %}
             </ul>
+            <div class="logout-container">
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-button">Выйти</button>
+                </form>
+            </div>
+            {% endif %}
         </nav>
     </header>
     <main>

@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import login
 from django.contrib import messages
 from hashlib import sha256
+from .forms import UserRegisterForm, UserLoginForm
+from django.http import JsonResponse
 
 # Главная страница
 def home(request):
@@ -29,11 +31,17 @@ class ClientCreateView(View):
         email = request.POST.get('email')
         address = request.POST.get('address')
 
+        # Проверка на наличие пробелов в ФИО
+        if ' ' in full_name:
+            error_message = "ФИО не должно содержать пробелов."
+            return render(request, 'client_form.html', {'error_message': error_message})
+
         if full_name and phone and email and address:
             # Хешируем email для проверки существования
             hashed_email = sha256(email.encode()).hexdigest()
             if Client.objects.filter(encrypted_email=hashed_email).exists():
-                return HttpResponse("Клиент с таким email уже существует.", status=400)
+                error_message = "Клиент с таким email уже существует."
+                return render(request, 'client_form.html', {'error_message': error_message})
 
             try:
                 client = Client(full_name=full_name, phone=phone, address=address)
@@ -41,8 +49,11 @@ class ClientCreateView(View):
                 client.save()
                 return redirect('client_list')
             except Exception as e:
-                return HttpResponse(f"An error occurred: {str(e)}", status=500)
-        return HttpResponse("Invalid data", status=400)
+                error_message = f"Произошла ошибка: {str(e)}"
+                return render(request, 'client_form.html', {'error_message': error_message})
+        
+        error_message = "Некорректные данные."
+        return render(request, 'client_form.html', {'error_message': error_message})
 
 class ClientUpdateView(View):
     def get(self, request, pk):
@@ -51,12 +62,21 @@ class ClientUpdateView(View):
 
     def post(self, request, pk):
         client = get_object_or_404(Client, pk=pk)
-        client.full_name = request.POST.get('full_name', client.full_name)
-        client.phone = request.POST.get('phone', client.phone)
+        full_name = request.POST.get('full_name', client.full_name)
+        phone = request.POST.get('phone', client.phone)
         email = request.POST.get('email')
+        address = request.POST.get('address', client.address)
+
+        # Проверка на наличие пробелов в ФИО
+        if ' ' in full_name:
+            error_message = "ФИО не должно содержать пробелов."
+            return render(request, 'client_form.html', {'client': client, 'error_message': error_message})
+
         if email:
-            client.set_email(email)
-        client.address = request.POST.get('address', client.address)
+            client.set_email(email)  # Зашифровываем email
+        client.full_name = full_name
+        client.phone = phone
+        client.address = address
         client.save()
         return redirect('client_list')
     
@@ -131,17 +151,16 @@ class ContractListView(View):
 class ContractCreateView(View):
     def get(self, request):
         clients = Client.objects.all()  # Получаем список клиентов для выбора
-        cars = Car.objects.all()  # Получаем список автомобилей для выбора
-        return render(request, 'contract_form.html', {'clients': clients, 'cars': cars})
+        return render(request, 'contract_form.html', {'clients': clients})
 
     def post(self, request):
         client_id = request.POST.get('client_id')
-        car_id = request.POST.get('car_id')
         date = request.POST.get('date')
         status = request.POST.get('status')
         total_amount = request.POST.get('total_amount')
-        
-        if client_id and car_id and date and status and total_amount:
+        car_id = request.POST.get('car_id')
+
+        if client_id and date and status and total_amount and car_id:
             client = get_object_or_404(Client, pk=client_id)
             car = get_object_or_404(Car, pk=car_id)
             Contract.objects.create(client=client, car=car, date=date, status=status, total_amount=total_amount)
@@ -311,30 +330,56 @@ class OrderDeleteView(View):
         order = get_object_or_404(Order, pk=pk)
         order.delete()
         return redirect('order_list')
-    
+
 def register(request):
     if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        email = request.POST.get('email')
-        full_name = request.POST.get('full_name')
-        phone = request.POST.get('phone')
-        address = request.POST.get('address')
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Ваш аккаунт создан! Вы можете войти.')
+            return redirect('login')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'users/register.html', {'form': form})
 
-        if username and password and email and full_name and phone and address:
-            if User.objects.filter(username=username).exists():
-                messages.error(request, 'Пользователь с таким именем уже существует.')
-                return redirect('register')
-
-            user = User.objects.create_user(username=username, password=password)
-            client = Client(full_name=full_name, phone=phone, address=address)
-            client.set_email(email)
-            client.save()
-            user.save()
+def login_view(request):
+    if request.method == 'POST':
+        form = UserLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            messages.success(request, 'Вы успешно зарегистрированы!')
-            return redirect('home')
-        else:
-            messages.error(request, 'Пожалуйста, заполните все поля.')
+            return redirect('home')  # Переход на главную страницу после входа
+    else:
+        form = UserLoginForm()
+    return render(request, 'users/login.html', {'form': form})
 
-    return render(request, 'registration/register.html')
+class UserDataView(View):
+    def get(self, request):
+        if request.user.is_authenticated:
+            # Получаем клиента по имени пользователя
+            client = Client.objects.filter(full_name=request.user.username).first()
+            if client:
+                # Получаем данные, связанные с клиентом
+                cars = Car.objects.filter(client=client)
+                contracts = Contract.objects.filter(client=client)
+                orders = Order.objects.filter(client=client)
+                services = Service.objects.all()  # Все услуги, если нужно
+                spare_parts = SparePart.objects.all()  # Все запчасти, если нужно
+
+                return render(request, 'user_data.html', {
+                    'client': client,
+                    'cars': cars,
+                    'contracts': contracts,
+                    'orders': orders,
+                    'services': services,
+                    'spare_parts': spare_parts,
+                })
+            else:
+                return render(request, 'user_data.html', {'error': 'Клиент не найден.'})
+        else:
+            return render(request, 'user_data.html', {'error': 'Пожалуйста, войдите в систему.'})
+        
+def get_cars_by_client(request):
+    client_id = request.GET.get('client_id')
+    cars = Car.objects.filter(client_id=client_id).values('id', 'brand', 'model')
+    return JsonResponse(list(cars), safe=False)

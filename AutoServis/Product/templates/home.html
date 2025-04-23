@@ -5,4 +5,13 @@
 {% block content %}
     <h2>Добро пожаловать в Автомастерскую</h2>
     <p>Здесь вы можете управлять клиентами, автомобилями, договорами, услугами и запчастями.</p>
+    {% if user.is_authenticated %}
+        <p>Добро пожаловать, {{ user.username }}!</p>
+        <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit">Выйти</button>
+        </form>
+    {% else %}
+        <p><a href="{% url 'login' %}">Войти</a> или <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+    {% endif %}
 {% endblock %}

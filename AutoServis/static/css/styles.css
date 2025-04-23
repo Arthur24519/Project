@@ -122,3 +122,24 @@ footer {
     bottom: 0;
     width: 100%;
 }
+
+.logout-button {
+    background-color: #ff4d4d; /* Красный цвет */
+    color: white; /* Белый текст */
+    border: none; /* Без границы */
+    padding: 10px 15px; /* Отступы */
+    border-radius: 5px; /* Закругленные углы */
+    cursor: pointer; /* Указатель при наведении */
+    font-size: 14px; /* Размер шрифта */
+    transition: background-color 0.3s; /* Плавный переход цвета */
+}
+
+.logout-button:hover {
+    background-color: #ff1a1a; /* Темнее при наведении */
+}
+
+.logout-container {
+    position: absolute; /* Абсолютное позиционирование */
+    top: 10px; /* Отступ сверху */
+    right: 10px; /* Отступ справа */
+}

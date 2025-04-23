@@ -4,14 +4,20 @@
 
 {% block content %}
     <h2>Список запчастей</h2>
-    <a href="{% url 'add_sparepart' %}">Добавить запчасть</a>
+    {% if user.is_authenticated %}
+        {% if user.is_staff %}  <!-- Проверка на права администратора -->
+            <a href="{% url 'add_sparepart' %}">Добавить запчасть</a>
+        {% endif %}
+    {% endif %}
     <table>
         <thead>
             <tr>
                 <th>Наименование</th>
                 <th>Цена</th>
                 <th>Количество</th>
-                <th>Действия</th>
+                {% if user.is_staff %}  <!-- Проверка на права администратора -->
+                    <th>Действия</th>
+                {% endif %}
             </tr>
         </thead>
         <tbody>
@@ -20,13 +26,15 @@
                     <td>{{ spare_part.name }}</td>
                     <td>{{ spare_part.price }}</td>
                     <td>{{ spare_part.quantity }}</td>
-                    <td>
-                        <a href="{% url 'edit_sparepart' spare_part.pk %}">Редактировать</a>
-                        <form action="{% url 'delete_sparepart' spare_part.pk %}" method="post" style="display:inline;">
-                            {% csrf_token %}
-                            <button type="submit">Удалить</button>
-                        </form>
-                    </td>
+                    {% if user.is_staff %}  <!-- Проверка на права администратора -->
+                        <td>
+                            <a href="{% url 'edit_sparepart' spare_part.pk %}">Редактировать</a>
+                            <form action="{% url 'delete_sparepart' spare_part.pk %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit">Удалить</button>
+                            </form>
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </tbody>
