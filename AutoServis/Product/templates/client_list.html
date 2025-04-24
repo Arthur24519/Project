@@ -4,7 +4,9 @@
 
 {% block content %}
     <h2>Список клиентов</h2>
-    <a href="{% url 'add_client' %}">Добавить клиента</a>
+    <a href="{% url 'add_client' %}">
+        <button type="button" class="btn btn-danger">Добавить клиента</button>
+    </a>
     <table>
         <thead>
             <tr>
@@ -23,7 +25,9 @@
                 <td>{{ email }}</td>
                 <td>{{ client.address }}</td>
                 <td>
-                    <a href="{% url 'edit_client' client.pk %}">Редактировать</a>
+                    <a href="{% url 'edit_client' client.pk %}">
+                        <button type="button" class="btn btn-danger">Редактировать</button>
+                    </a>
                     <form action="{% url 'delete_client' client.pk %}" method="post" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit">Удалить</button>

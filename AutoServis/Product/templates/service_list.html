@@ -6,7 +6,9 @@
     <h2>Список услуг</h2>
     {% if user.is_authenticated %}
         {% if user.is_staff %}  <!-- Проверка на права администратора -->
-            <a href="{% url 'add_service' %}">Добавить услугу</a>
+            <a href="{% url 'add_service' %}">
+                <button type="button" class="btn btn-danger">Добавить услугу</button>
+            </a>
         {% endif %}
     {% endif %}
     <table>
@@ -28,7 +30,9 @@
                     <td>{{ service.price }}</td>
                     {% if user.is_staff %}  <!-- Проверка на права администратора -->
                         <td>
-                            <a href="{% url 'edit_service' service.pk %}">Редактировать</a>
+                            <a href="{% url 'edit_service' service.pk %}">
+                                <button type="button" class="btn btn-danger">Редактировать</button>
+                            </a>
                             <form action="{% url 'delete_service' service.pk %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit">Удалить</button>

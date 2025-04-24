@@ -8,20 +8,25 @@ from django.contrib import messages
 from hashlib import sha256
 from .forms import UserRegisterForm, UserLoginForm
 from django.http import JsonResponse
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 
 # Главная страница
 def home(request):
     return render(request, 'home.html')
 
-# Представления для клиентов
-class ClientListView(View):
+class ClientListView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
     def get(self, request):
         clients = Client.objects.all()
-        # Используем get_email() для отображения email
         clients_with_email = [(client, client.get_email()) for client in clients]
         return render(request, 'client_list.html', {'clients': clients_with_email})
 
-class ClientCreateView(View):
+class ClientCreateView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+
     def get(self, request):
         return render(request, 'client_form.html')
     
@@ -91,7 +96,10 @@ class ClientDeleteView(View):
         return redirect('client_list')
 
 # Представления для автомобилей 
-class CarListView(View):
+class CarListView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+    
     def get(self, request):
         cars = Car.objects.all()
         return render(request, 'car_list.html', {'cars': cars})
@@ -142,8 +150,10 @@ class CarDeleteView(View):
         car.delete()
         return redirect('car_list')
 
-# Представления для договоров
-class ContractListView(View):
+class ContractListView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+    
     def get(self, request):
         contracts = Contract.objects.all()
         return render(request, 'contract_list.html', {'contracts': contracts})
@@ -203,7 +213,7 @@ class ServiceListView(View):
     def get(self, request):
         services = Service.objects.all()
         return render(request, 'service_list.html', {'services': services})
-
+    
 class ServiceCreateView(View):
     def get(self, request):
         # Отправляем пустую форму для добавления услуги
@@ -279,11 +289,14 @@ class SparePartDeleteView(View):
         return redirect('sparepart_list')
 
 # Представления для заказов
-class OrderListView(View):
+class OrderListView(UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_staff
+    
     def get(self, request):
         orders = Order.objects.all()
         return render(request, 'order_list.html', {'orders': orders})
-
+    
 class OrderCreateView(View):
     def get(self, request):
         clients = Client.objects.all()  # Получаем список клиентов
@@ -383,3 +396,4 @@ def get_cars_by_client(request):
     client_id = request.GET.get('client_id')
     cars = Car.objects.filter(client_id=client_id).values('id', 'brand', 'model')
     return JsonResponse(list(cars), safe=False)
+

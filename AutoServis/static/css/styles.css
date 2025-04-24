@@ -143,3 +143,16 @@ footer {
     top: 10px; /* Отступ сверху */
     right: 10px; /* Отступ справа */
 }
+
+.btn {
+    background-color: #35424a;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #2c3e50;
+}

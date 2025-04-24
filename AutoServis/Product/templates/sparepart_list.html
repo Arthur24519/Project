@@ -6,7 +6,9 @@
     <h2>Список запчастей</h2>
     {% if user.is_authenticated %}
         {% if user.is_staff %}  <!-- Проверка на права администратора -->
-            <a href="{% url 'add_sparepart' %}">Добавить запчасть</a>
+            <a href="{% url 'add_sparepart' %}">
+                <button type="button" class="btn btn-danger">Добавить запчасть</button>
+            </a>
         {% endif %}
     {% endif %}
     <table>
@@ -28,7 +30,9 @@
                     <td>{{ spare_part.quantity }}</td>
                     {% if user.is_staff %}  <!-- Проверка на права администратора -->
                         <td>
-                            <a href="{% url 'edit_sparepart' spare_part.pk %}">Редактировать</a>
+                            <a href="{% url 'edit_sparepart' spare_part.pk %}">
+                                <button type="button" class="btn btn-danger">Редактировать</button>
+                            </a>
                             <form action="{% url 'delete_sparepart' spare_part.pk %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit">Удалить</button>

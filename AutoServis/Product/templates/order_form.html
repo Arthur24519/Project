@@ -25,5 +25,5 @@
         
         <button type="submit">{% if order %}Сохранить{% else %}Добавить{% endif %}</button>
     </form>
-    <a href="{% url 'order_list' %}">Назад к списку заказов</a>
+    <a href="{% url 'order_list' %}"><button type="button" class="btn btn-danger">Назад к списку заказов</button></a>
 {% endblock %}

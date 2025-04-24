@@ -5,7 +5,9 @@
 {% block content %}
     <h2>Список автомобилей</h2>
     {% if user.is_authenticated %}
-        <a href="{% url 'add_car' %}">Добавить автомобиль</a>
+    <a href="{% url 'add_car' %}">
+        <button type="button" class="btn btn-danger">Добавить автомобиль</button>
+    </a>
     {% endif %}
     <table>
         <thead>
@@ -28,7 +30,9 @@
                     <td>{{ car.client.full_name }}</td>
                     <td>
                         {% if user.is_authenticated %}
-                            <a href="{% url 'edit_car' car.pk %}">Редактировать</a>
+                            <a href="{% url 'edit_car' car.pk %}">
+                                <button type="button" class="btn btn-danger">Редактировать</button>
+                            </a>
                             <form action="{% url 'delete_car' car.pk %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit">Удалить</button>

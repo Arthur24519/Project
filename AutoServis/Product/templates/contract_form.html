@@ -29,7 +29,7 @@
         
         <button type="submit">{% if contract %}Сохранить{% else %}Добавить{% endif %}</button>
     </form>
-    <a href="{% url 'contract_list' %}">Назад к списку договоров</a>
+    <a href="{% url 'contract_list' %}"><button type="button" class="btn btn-danger">Назад к списку договоров</button></a>
 
     <script>
         function updateCar() {

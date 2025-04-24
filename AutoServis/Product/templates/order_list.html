@@ -4,7 +4,9 @@
 
 {% block content %}
     <h2>Список заказов</h2>
-    <a href="{% url 'add_order' %}">Добавить заказ</a>
+    <a href="{% url 'add_order' %}">
+        <button type="button" class="btn btn-danger">Добавить заказ</button>
+    </a>
     <table>
         <thead>
             <tr>
@@ -21,7 +23,9 @@
                     <td>{{ order.service.name }}</td>
                     <td>{{ order.order_date }}</td>
                     <td>
-                        <a href="{% url 'edit_order' order.pk %}">Редактировать</a>
+                        <a href="{% url 'edit_order' order.pk %}">
+                            <button type="button" class="btn btn-danger">Редактировать</button>
+                        </a>
                         <form action="{% url 'delete_order' order.pk %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit">Удалить</button>

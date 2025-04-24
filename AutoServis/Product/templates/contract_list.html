@@ -4,7 +4,9 @@
 
 {% block content %}
     <h2>Список договоров</h2>
-    <a href="{% url 'add_contract' %}">Добавить договор</a>
+    <a href="{% url 'add_contract' %}">
+        <button type="button" class="btn btn-danger">Добавить договор</button>
+    </a>
     <table>
         <thead>
             <tr>
@@ -25,7 +27,9 @@
                     <td>{{ contract.status }}</td>
                     <td>{{ contract.total_amount }}</td>
                     <td>
-                        <a href="{% url 'edit_contract' contract.pk %}">Редактировать</a>
+                        <a href="{% url 'edit_contract' contract.pk %}">
+                            <button type="button" class="btn btn-danger">Редактировать</button>
+                        </a>
                         <form action="{% url 'delete_contract' contract.pk %}" method="post" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit">Удалить</button>
