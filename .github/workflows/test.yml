@@ -1,4 +1,4 @@
-name: Run Tests
+name: Django Tests
 
 on:
   push:
@@ -9,6 +9,21 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: Auto_Service
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: 123654789
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
     - name: Checkout code
@@ -21,8 +36,13 @@ jobs:
 
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
+
+    - name: Run migrations
+      run: |
+        python manage.py migrate
 
     - name: Run tests
       run: |
-        pytest
+        python -m pytest

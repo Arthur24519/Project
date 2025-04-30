@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -78,9 +79,9 @@ WSGI_APPLICATION = 'AutoServis.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Auto_Service',
-        'USER': 'postgres',
-        'PASSWORD': '123654789',
+        'NAME': os.getenv('POSTGRES_DB', 'Auto_Service'),
+        'USER': os.getenv('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD', '123654789'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
