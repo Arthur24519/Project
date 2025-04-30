@@ -12,11 +12,11 @@ jobs:
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:17
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: 123654789  # Измените на ваш пароль
-          POSTGRES_DB: Auto_Service  # Измените на имя вашей базы данных
+          POSTGRES_PASSWORD: 123654789
+          POSTGRES_DB: Auto_Service
         ports:
           - 5432:5432  
         options: >-
@@ -29,14 +29,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3 
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.13.2
         uses: actions/setup-python@v4
         with:
-          python-version: '3.13'
+          python-version: '3.13.2'
 
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt  # Установите зависимости из вашего requirements.txt
+          pip install -r requirements.txt
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -46,13 +46,13 @@ jobs:
           done
 
       - name: Apply migrations
-        working-directory: ./AutoServis  # Убедитесь, что путь к вашему проекту правильный
+        working-directory: ./AutoServis
         run: python manage.py migrate
 
       - name: Run unittests
-        working-directory: ./AutoServis  # Убедитесь, что путь к вашему проекту правильный
+        working-directory: ./AutoServis 
         run: python manage.py test
 
       - name: Run pytests
-        working-directory: ./AutoServis  # Убедитесь, что путь к вашему проекту правильный
+        working-directory: ./AutoServis
         run: pytest -v
