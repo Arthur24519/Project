@@ -9,11 +9,14 @@ REST API: Фреймворк Django REST Framework
 
 Клонируйте репозиторий:
 git clone https://github.com/Arthur24519/Project.git
+
 cd AutoServis
 
 Создайте виртуальное окружение:
 python -m venv venv
+
 source venv/bin/activate  # Для Linux/Mac
+
 venv\Scripts\activate  # Для Windows
 
 Установите зависимости:
