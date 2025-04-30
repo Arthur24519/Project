@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .views import CarListByClientView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -39,5 +40,5 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     path('data/', views.UserDataView.as_view(), name='user_data'),
-    path('api/cars/', views.get_cars_by_client, name='get_cars_by_client'),
+    path('api/cars/', CarListByClientView.as_view(), name='get_cars_by_client'),
 ]

@@ -228,7 +228,7 @@ class CarListView(UserPassesTestMixin, APIView):
             # Обработка HTML-запроса
             cars = Car.objects.all()
             return render(request, 'car_list.html', {'cars': cars})  # Возвращаем HTML-страницу
-
+            
 class CarCreateView(APIView):
     @swagger_auto_schema(
         operation_description="Создать новый автомобиль",
@@ -247,13 +247,14 @@ class CarCreateView(APIView):
                 model = serializer.validated_data['model']
                 year = serializer.validated_data['year']
                 vin = serializer.validated_data['vin']
-                client_id = serializer.validated_data['client_id']  # Изменено на client_id
+                client_name = serializer.validated_data['client_name']  # Используем client_name для JSON
 
                 # Проверка длины VIN
                 if len(vin) > 17:
                     return Response({"error": "VIN не может превышать 17 символов."}, status=stat.HTTP_400_BAD_REQUEST)
 
-                client = get_object_or_404(Client, pk=client_id)  # Находим клиента по ID
+                # Находим клиента по полному имени
+                client = get_object_or_404(Client, full_name=client_name)  # Изменено на поиск по full_name
                 Car.objects.create(brand=brand, model=model, year=year, vin=vin, client=client)
                 return Response(serializer.data, status=stat.HTTP_201_CREATED)
 
@@ -264,20 +265,21 @@ class CarCreateView(APIView):
             model = request.POST.get('model')
             year = request.POST.get('year')
             vin = request.POST.get('vin')
-            client_id = request.POST.get('client_id')  # Изменено на client_id
+            client_id = request.POST.get('client_id')  # Используем client_id для HTML
 
             if len(vin) > 17:
                 error_message = "VIN не может превышать 17 символов."
                 return render(request, 'car_form.html', {'error_message': error_message})
 
             if brand and model and year and vin and client_id:
-                client = get_object_or_404(Client, pk=client_id)  # Находим клиента по ID
+                # Находим клиента по ID
+                client = get_object_or_404(Client, id=client_id)  # Изменено на поиск по ID
                 Car.objects.create(brand=brand, model=model, year=year, vin=vin, client=client)
                 return redirect('car_list')
 
             error_message = "Некорректные данные."
             return render(request, 'car_form.html', {'error_message': error_message})
-
+            
     def get(self, request):
         clients = Client.objects.all()
         return render(request, 'car_form.html', {'clients': clients})
@@ -1032,7 +1034,8 @@ class UserDataView(APIView):
         else:
             return render(request, 'user_data.html', {'error': 'Пожалуйста, войдите в систему.'})
 
-def get_cars_by_client(request):
-    client_id = request.GET.get(' client_id')
-    cars = Car.objects.filter(client_id=client_id).values('id', 'brand', 'model')
-    return JsonResponse(list(cars), safe=False)
+class CarListByClientView(APIView):
+    def get(self, request):
+        client_id = request.GET.get('client_id')
+        cars = Car.objects.filter(client_id=client_id).values('id', 'brand', 'model')
+        return Response(list(cars), status=200)
