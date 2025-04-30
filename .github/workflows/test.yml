@@ -40,9 +40,10 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run migrations
-      run: |
+      run: python manage.py migrate
         python manage.py migrate
+      working-directory: ./project
 
-    - name: Run tests
-      run: |
-        python -m pytest
+    - name: Run pytests
+      working-directory: ./example
+      run: uv run pytest -v
